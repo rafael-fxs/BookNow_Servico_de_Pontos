@@ -4,10 +4,9 @@ import com.booknow.pontos.application.service.TransacaoPontosService;
 import com.booknow.pontos.domain.model.TransacaoPontos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/transacoes")
@@ -22,5 +21,15 @@ public class TransacaoPontosController {
         return ResponseEntity.ok().build();
     }
 
-    // Outros endpoints para histórico e saldo
+    @GetMapping("/saldo/{usuarioId}")
+    public ResponseEntity<Integer> consultarSaldo(@PathVariable Long usuarioId) {
+        int saldo = transacaoPontosService.consultarSaldo(usuarioId);
+        return ResponseEntity.ok(saldo);
+    }
+
+    @GetMapping("/historico/{usuarioId}")
+    public ResponseEntity<List<TransacaoPontos>> consultarHistoricoTransacoes(@PathVariable Long usuarioId) {
+        List<TransacaoPontos> historico = transacaoPontosService.consultarHistoricoTransacoes(usuarioId);
+        return ResponseEntity.ok(historico);
+    }
 }

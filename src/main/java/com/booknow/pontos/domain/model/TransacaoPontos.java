@@ -31,7 +31,5 @@ public class TransacaoPontos {
     @Enumerated(EnumType.STRING)
     private TipoTransacao tipoTransacao;
 
-    private String motivo;
-
     private LocalDateTime dataTransacao = LocalDateTime.now();
 }
