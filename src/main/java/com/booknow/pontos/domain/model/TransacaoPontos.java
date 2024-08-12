@@ -29,7 +29,7 @@ public class TransacaoPontos {
     private int pontos;
 
     @Enumerated(EnumType.STRING)
-    private TipoTransacao tipoTransacao;
+    private TipoTransacao tipo;
 
     private LocalDateTime dataTransacao = LocalDateTime.now();
 }

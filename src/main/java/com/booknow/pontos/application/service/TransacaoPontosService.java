@@ -33,8 +33,7 @@ public class TransacaoPontosService {
         Usuario usuario = usuarioRepository.findById(transacao.getUsuario().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        // Valida se há saldo suficiente em caso de gasto
-        if (transacao.getTipoTransacao() == TipoTransacao.GASTO) {
+        if (transacao.getTipo() == TipoTransacao.GASTO) {
             if (usuario.getSaldoPontos() < transacao.getPontos()) {
                 throw new IllegalArgumentException("Saldo insuficiente para realizar a transação.");
             }
