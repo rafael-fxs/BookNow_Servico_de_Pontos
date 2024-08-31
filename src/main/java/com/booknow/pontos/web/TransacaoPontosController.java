@@ -32,4 +32,9 @@ public class TransacaoPontosController {
         List<TransacaoPontos> historico = transacaoPontosService.consultarHistoricoTransacoes(usuarioId);
         return ResponseEntity.ok(historico);
     }
+    @GetMapping("/teste")
+    public String helloWorld() {
+        return "Hello World";
+    }
+
 }
