@@ -21,15 +21,15 @@ public class TransacaoPontosController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/saldo/{usuarioId}")
-    public ResponseEntity<Integer> consultarSaldo(@PathVariable Long usuarioId) {
-        int saldo = transacaoPontosService.consultarSaldo(usuarioId);
+    @GetMapping("/saldo/{UserId}")
+    public ResponseEntity<Integer> consultarSaldo(@PathVariable int UserId) {
+        int saldo = transacaoPontosService.consultarSaldo(UserId);
         return ResponseEntity.ok(saldo);
     }
 
-    @GetMapping("/historico/{usuarioId}")
-    public ResponseEntity<List<TransacaoPontos>> consultarHistoricoTransacoes(@PathVariable Long usuarioId) {
-        List<TransacaoPontos> historico = transacaoPontosService.consultarHistoricoTransacoes(usuarioId);
+    @GetMapping("/historico/{UserId}")
+    public ResponseEntity<List<TransacaoPontos>> consultarHistoricoTransacoes(@PathVariable int UserId) {
+        List<TransacaoPontos> historico = transacaoPontosService.consultarHistoricoTransacoes(UserId);
         return ResponseEntity.ok(historico);
     }
     @GetMapping("/teste")

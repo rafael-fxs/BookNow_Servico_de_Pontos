@@ -1,7 +1,7 @@
 package com.booknow.pontos.web;
 
-import com.booknow.pontos.domain.model.Usuario;
-import com.booknow.pontos.domain.repository.UsuarioRepository;
+import com.booknow.pontos.domain.model.User;
+import com.booknow.pontos.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,18 +11,20 @@ import org.springframework.web.bind.annotation.*;
 public class SimulacaoController {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UserRepository UserRepository;
 
     @PostMapping("/usuario/{id}")
-    public ResponseEntity<Usuario> simularUsuario(@PathVariable Long id) {
-        Usuario usuario = new Usuario();
-        usuario.setId(id);
-        usuario.setNome("Usuário Simulado " + id);
-        usuario.setEmail("simulado" + id + "@exemplo.com");
-        usuario.setSaldoPontos(0);
+    public ResponseEntity<User> simularUser(@PathVariable int id) {
+        User User = new User();
+        User.setId(id);
+        User.setCpf("00000000000");
+        User.setNome("Usuário Simulado " + id);
+        User.setEmail("simulado" + id + "@exemplo.com");
+        User.setSenha("123456");
+        User.setTotalPontos(0);
 
-        usuarioRepository.save(usuario);
-        return ResponseEntity.ok(usuario);
+        UserRepository.save(User);
+        return ResponseEntity.ok(User);
     }
 
     @PostMapping("/livro")

@@ -2,15 +2,14 @@ package com.booknow.pontos.application.service;
 
 import com.booknow.pontos.domain.model.TipoTransacao;
 import com.booknow.pontos.domain.model.TransacaoPontos;
-import com.booknow.pontos.domain.model.Usuario;
+import com.booknow.pontos.domain.model.User;
 import com.booknow.pontos.domain.repository.TransacaoPontosRepository;
-import com.booknow.pontos.domain.repository.UsuarioRepository;
+import com.booknow.pontos.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 
 @Service
 public class TransacaoPontosService {
@@ -19,7 +18,7 @@ public class TransacaoPontosService {
     private TransacaoPontosRepository transacaoPontosRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UserRepository UserRepository;
 
     /**
      * Registra uma nova transação de pontos para um usuário.
@@ -30,45 +29,45 @@ public class TransacaoPontosService {
      */
     @Transactional
     public void registrarTransacao(TransacaoPontos transacao) {
-        Usuario usuario = usuarioRepository.findById(transacao.getUsuario().getId())
+        User user = UserRepository.findById(transacao.getIdUser())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         if (transacao.getTipo() == TipoTransacao.GASTO) {
-            if (usuario.getSaldoPontos() < transacao.getPontos()) {
+            if (user.getTotalPontos() < transacao.getPontos()) {
                 throw new IllegalArgumentException("Saldo insuficiente para realizar a transação.");
             }
-            usuario.setSaldoPontos(usuario.getSaldoPontos() - transacao.getPontos());
+            user.setTotalPontos(user.getTotalPontos() - transacao.getPontos());
         } else {
-            usuario.setSaldoPontos(usuario.getSaldoPontos() + transacao.getPontos());
+            user.setTotalPontos(user.getTotalPontos() + transacao.getPontos());
         }
-
-        usuarioRepository.save(usuario);
+        UserRepository.save(user);
+        transacao.setUser(user);
         transacaoPontosRepository.save(transacao);
     }
 
     /**
      * Consulta o saldo de pontos de um usuário.
      *
-     * @param usuarioId o ID do usuário
+     * @param UserId o ID do usuário
      * @return o saldo de pontos do usuário
      * @throws IllegalArgumentException se o usuário não for encontrado
      */
-    public int consultarSaldo(Long usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
+    public int consultarSaldo(int UserId) {
+        User User = UserRepository.findById(UserId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        return usuario.getSaldoPontos();
+        return User.getTotalPontos();
     }
 
     /**
      * Consulta o histórico de transações de um usuário.
      *
-     * @param usuarioId o ID do usuário
+     * @param UserId o ID do usuário
      * @return a lista de transações do usuário
      * @throws IllegalArgumentException se o usuário não for encontrado
      */
-    public List<TransacaoPontos> consultarHistoricoTransacoes(Long usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
+    public List<TransacaoPontos> consultarHistoricoTransacoes(int UserId) {
+        User User = UserRepository.findById(UserId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        return transacaoPontosRepository.findByUsuario(usuario);
+        return transacaoPontosRepository.findByUser(User);
     }
 }
