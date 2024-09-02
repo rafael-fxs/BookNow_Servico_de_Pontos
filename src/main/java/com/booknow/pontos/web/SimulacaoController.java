@@ -26,10 +26,4 @@ public class SimulacaoController {
         UserRepository.save(User);
         return ResponseEntity.ok(User);
     }
-
-    @PostMapping("/livro")
-    public ResponseEntity<Long> simularLivro() {
-        Long livroId = 123L;
-        return ResponseEntity.ok(livroId);
-    }
 }
