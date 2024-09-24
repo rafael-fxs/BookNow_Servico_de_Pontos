@@ -1,10 +1,12 @@
-package com.booknow.pontos.application.service;
+package com.booknow.pontos.service;
 
 import com.booknow.pontos.domain.model.TipoTransacao;
 import com.booknow.pontos.domain.model.TransacaoPontos;
 import com.booknow.pontos.domain.model.User;
 import com.booknow.pontos.domain.repository.TransacaoPontosRepository;
 import com.booknow.pontos.domain.repository.UserRepository;
+import com.booknow.pontos.feign.controller.FeignLivros;
+import com.booknow.pontos.feign.model.LivroTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +20,10 @@ public class TransacaoPontosService {
     private TransacaoPontosRepository transacaoPontosRepository;
 
     @Autowired
-    private UserRepository UserRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private FeignLivros feignLivros;
 
     /**
      * Registra uma nova transação de pontos para um usuário.
@@ -29,18 +34,21 @@ public class TransacaoPontosService {
      */
     @Transactional
     public void registrarTransacao(TransacaoPontos transacao) {
-        User user = UserRepository.findById(transacao.getIdUser())
+        User user = userRepository.findById(transacao.getIdUser())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        
+        LivroTo livro = feignLivros.findById(transacao.getIdLivro())
+                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado"));
 
         if (transacao.getTipo() == TipoTransacao.GASTO) {
-            if (user.getTotalPontos() < transacao.getPontos()) {
+            if (user.getTotalPontos() < livro.getPontos()) {
                 throw new IllegalArgumentException("Saldo insuficiente para realizar a transação.");
             }
-            user.setTotalPontos(user.getTotalPontos() - transacao.getPontos());
+            user.setTotalPontos(user.getTotalPontos() - livro.getPontos());
         } else {
-            user.setTotalPontos(user.getTotalPontos() + transacao.getPontos());
+            user.setTotalPontos(user.getTotalPontos() + livro.getPontos());
         }
-        UserRepository.save(user);
+        userRepository.save(user);
         transacao.setUser(user);
         transacaoPontosRepository.save(transacao);
     }
@@ -53,7 +61,7 @@ public class TransacaoPontosService {
      * @throws IllegalArgumentException se o usuário não for encontrado
      */
     public int consultarSaldo(int UserId) {
-        User User = UserRepository.findById(UserId)
+        User User = userRepository.findById(UserId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
         return User.getTotalPontos();
     }
@@ -66,7 +74,7 @@ public class TransacaoPontosService {
      * @throws IllegalArgumentException se o usuário não for encontrado
      */
     public List<TransacaoPontos> consultarHistoricoTransacoes(int UserId) {
-        User User = UserRepository.findById(UserId)
+        User User = userRepository.findById(UserId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
         return transacaoPontosRepository.findByUser(User);
     }

@@ -1,6 +1,6 @@
 package com.booknow.pontos.web;
 
-import com.booknow.pontos.application.service.TransacaoPontosService;
+import com.booknow.pontos.service.TransacaoPontosService;
 import com.booknow.pontos.domain.model.TransacaoPontos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
