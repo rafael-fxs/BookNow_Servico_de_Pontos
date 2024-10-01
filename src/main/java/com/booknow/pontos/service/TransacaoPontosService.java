@@ -6,9 +6,12 @@ import com.booknow.pontos.domain.model.User;
 import com.booknow.pontos.domain.repository.TransacaoPontosRepository;
 import com.booknow.pontos.domain.repository.UserRepository;
 import com.booknow.pontos.feign.controller.FeignLivros;
+import com.booknow.pontos.feign.controller.FeignUsuario;
 import com.booknow.pontos.feign.model.LivroTo;
+import com.booknow.pontos.feign.model.UsuarioTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -25,6 +28,9 @@ public class TransacaoPontosService {
     @Autowired
     private FeignLivros feignLivros;
 
+    @Autowired
+    private FeignUsuario feignUsuario;
+
     /**
      * Registra uma nova transação de pontos para um usuário.
      * Valida o saldo do usuário antes de permitir uma transação de gasto.
@@ -34,23 +40,24 @@ public class TransacaoPontosService {
      */
     @Transactional
     public void registrarTransacao(TransacaoPontos transacao) {
-        User user = userRepository.findById(transacao.getIdUser())
+        UsuarioTo user = feignUsuario.findById(transacao.getIdUser())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
         
         LivroTo livro = feignLivros.findById(transacao.getIdLivro())
                 .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado"));
 
+        Integer pontosAtualizado = user.getTotalPontos();
         if (transacao.getTipo() == TipoTransacao.GASTO) {
             if (user.getTotalPontos() < livro.getPontos()) {
                 throw new IllegalArgumentException("Saldo insuficiente para realizar a transação.");
             }
-            user.setTotalPontos(user.getTotalPontos() - livro.getPontos());
+            pontosAtualizado = user.getTotalPontos() - livro.getPontos();
         } else {
-            user.setTotalPontos(user.getTotalPontos() + livro.getPontos());
+            pontosAtualizado = user.getTotalPontos() + livro.getPontos();
         }
-        userRepository.save(user);
-        transacao.setUser(user);
+        transacao.setIdUser(user.getId());
         transacaoPontosRepository.save(transacao);
+        this.atualizaPontos(user.getId(), pontosAtualizado);
     }
 
     /**
@@ -77,5 +84,9 @@ public class TransacaoPontosService {
         User User = userRepository.findById(UserId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
         return transacaoPontosRepository.findByUser(User);
+    }
+    
+    private void atualizaPontos(Integer id, Integer pontos) {
+        feignUsuario.atualizaPontos(id, pontos);
     }
 }
