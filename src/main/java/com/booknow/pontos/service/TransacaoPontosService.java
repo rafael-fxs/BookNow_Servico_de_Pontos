@@ -2,9 +2,7 @@ package com.booknow.pontos.service;
 
 import com.booknow.pontos.domain.model.TipoTransacao;
 import com.booknow.pontos.domain.model.TransacaoPontos;
-import com.booknow.pontos.domain.model.User;
 import com.booknow.pontos.domain.repository.TransacaoPontosRepository;
-import com.booknow.pontos.domain.repository.UserRepository;
 import com.booknow.pontos.feign.controller.FeignLivros;
 import com.booknow.pontos.feign.controller.FeignUsuario;
 import com.booknow.pontos.feign.model.LivroTo;
@@ -20,9 +18,6 @@ public class TransacaoPontosService {
 
     @Autowired
     private TransacaoPontosRepository transacaoPontosRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private FeignLivros feignLivros;
@@ -61,27 +56,27 @@ public class TransacaoPontosService {
     /**
      * Consulta o saldo de pontos de um usuário.
      *
-     * @param UserId o ID do usuário
+     * @param userId o ID do usuário
      * @return o saldo de pontos do usuário
      * @throws IllegalArgumentException se o usuário não for encontrado
      */
-    public int consultarSaldo(int UserId) {
-        User User = userRepository.findById(UserId)
+    public int consultarSaldo(int userId) {
+        UsuarioTo user = feignUsuario.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        return User.getTotalPontos();
+        return user.getTotalPontos();
     }
 
     /**
      * Consulta o histórico de transações de um usuário.
      *
-     * @param UserId o ID do usuário
+     * @param userId o ID do usuário
      * @return a lista de transações do usuário
      * @throws IllegalArgumentException se o usuário não for encontrado
      */
-    public List<TransacaoPontos> consultarHistoricoTransacoes(int UserId) {
-        User User = userRepository.findById(UserId)
+    public List<TransacaoPontos> consultarHistoricoTransacoes(int userId) {
+        UsuarioTo user = feignUsuario.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        return transacaoPontosRepository.findByUser(User);
+        return transacaoPontosRepository.findByIdUser(userId);
     }
 
     private void atualizaPontos(Integer id, Integer pontos) {
