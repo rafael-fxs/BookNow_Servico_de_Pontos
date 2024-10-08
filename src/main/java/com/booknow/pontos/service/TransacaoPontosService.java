@@ -11,7 +11,6 @@ import com.booknow.pontos.feign.model.LivroTo;
 import com.booknow.pontos.feign.model.UsuarioTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -42,22 +41,21 @@ public class TransacaoPontosService {
     public void registrarTransacao(TransacaoPontos transacao) {
         UsuarioTo user = feignUsuario.findById(transacao.getIdUser())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        
+
         LivroTo livro = feignLivros.findById(transacao.getIdLivro())
                 .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado"));
 
         Integer pontosAtualizado = user.getTotalPontos();
         if (transacao.getTipo() == TipoTransacao.GASTO) {
-            if (user.getTotalPontos() < livro.getPontos()) {
+            if (pontosAtualizado < livro.getPontos()) {
                 throw new IllegalArgumentException("Saldo insuficiente para realizar a transação.");
             }
-            pontosAtualizado = user.getTotalPontos() - livro.getPontos();
+            pontosAtualizado -= livro.getPontos();
         } else {
-            pontosAtualizado = user.getTotalPontos() + livro.getPontos();
+            pontosAtualizado += livro.getPontos();
         }
-        transacao.setIdUser(user.getId());
+        this.atualizaPontos(transacao.getIdUser(), pontosAtualizado);
         transacaoPontosRepository.save(transacao);
-        this.atualizaPontos(user.getId(), pontosAtualizado);
     }
 
     /**
@@ -85,7 +83,7 @@ public class TransacaoPontosService {
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
         return transacaoPontosRepository.findByUser(User);
     }
-    
+
     private void atualizaPontos(Integer id, Integer pontos) {
         feignUsuario.atualizaPontos(id, pontos);
     }
