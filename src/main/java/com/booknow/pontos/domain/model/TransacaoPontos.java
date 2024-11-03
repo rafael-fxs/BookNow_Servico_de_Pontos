@@ -25,11 +25,6 @@ public class TransacaoPontos {
     @Column(name = "idUser", nullable = false)
     private int idUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUser", insertable = false, updatable = false, nullable = false)
-    @JsonIgnore
-    private User user;
-
     @Column(name = "idLivro", nullable = false)
     private Long idLivro;
 
