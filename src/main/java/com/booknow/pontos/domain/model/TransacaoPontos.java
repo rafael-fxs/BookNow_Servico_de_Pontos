@@ -1,5 +1,6 @@
 package com.booknow.pontos.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class TransacaoPontos {
     @Column(name = "idLivro", nullable = false)
     private Long idLivro;
 
+    @JsonIgnore
     @Column(name = "pontos", nullable = false)
     private int pontos;
 
@@ -34,6 +36,7 @@ public class TransacaoPontos {
     @Enumerated(EnumType.STRING)
     private TipoTransacao tipo;
 
+    @JsonIgnore
     @Column(name = "data_transacao", nullable = false)
     private LocalDateTime dataTransacao = LocalDateTime.now();
 }

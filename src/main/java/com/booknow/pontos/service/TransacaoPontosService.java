@@ -49,6 +49,7 @@ public class TransacaoPontosService {
         } else {
             pontosAtualizado += livro.getPontos();
         }
+        transacao.setPontos(pontosAtualizado);
         this.atualizaPontos(transacao.getIdUser(), pontosAtualizado);
         transacaoPontosRepository.save(transacao);
     }
