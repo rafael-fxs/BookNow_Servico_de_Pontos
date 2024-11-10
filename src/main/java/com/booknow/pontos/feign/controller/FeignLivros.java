@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Optional;
 
 @Controller
-@FeignClient(name="livrosService", url = "http://localhost:8082")
+@FeignClient(name="livrosService", url="${livros.service.url}")
 public interface FeignLivros {
 
     @GetMapping("/livros/{id}")

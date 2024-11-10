@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.Optional;
 
 @Controller
-@FeignClient(name="usuarioService", url = "http://localhost:8081")
+@FeignClient(name="usuarioService", url="${usuario.service.url}")
 public interface FeignUsuario {
 
     @GetMapping("/Usuario/{id}")
