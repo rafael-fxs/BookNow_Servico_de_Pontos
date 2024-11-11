@@ -2,6 +2,7 @@ package com.booknow.pontos.web;
 
 import com.booknow.pontos.service.TransacaoPontosService;
 import com.booknow.pontos.domain.model.TransacaoPontos;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class TransacaoPontosController {
     private TransacaoPontosService transacaoPontosService;
 
     @PostMapping
-    public ResponseEntity<Void> registrarTransacao(@RequestBody TransacaoPontos transacao) {
+    public ResponseEntity<Void> registrarTransacao(@RequestBody TransacaoPontos transacao) throws JsonProcessingException {
         transacaoPontosService.registrarTransacao(transacao);
         return ResponseEntity.ok().build();
     }

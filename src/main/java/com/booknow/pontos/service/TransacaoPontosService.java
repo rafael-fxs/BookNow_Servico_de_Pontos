@@ -1,6 +1,7 @@
 package com.booknow.pontos.service;
 
 import com.booknow.pontos.domain.model.TipoTransacao;
+import com.booknow.pontos.config.RequestProducer;
 import com.booknow.pontos.domain.model.TransacaoPontos;
 import com.booknow.pontos.domain.repository.TransacaoPontosRepository;
 import com.booknow.pontos.feign.controller.FeignLivros;
@@ -14,13 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class TransacaoPontosService {
+public class  TransacaoPontosService {
 
     @Autowired
     private TransacaoPontosRepository transacaoPontosRepository;
 
     @Autowired
     private FeignLivros feignLivros;
+
+    @Autowired
+    private RequestProducer requestProducer;
 
     @Autowired
     private FeignUsuario feignUsuario;
@@ -52,7 +56,9 @@ public class TransacaoPontosService {
         transacao.setPontos(pontosAtualizado);
         this.atualizaPontos(transacao.getIdUser(), pontosAtualizado);
         transacaoPontosRepository.save(transacao);
+        requestProducer.sendMessage(pontosAtualizado);
     }
+
 
     /**
      * Consulta o saldo de pontos de um usuário.
